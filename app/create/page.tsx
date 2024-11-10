@@ -120,7 +120,7 @@ export default function CreateSurvey() {
     // Create a link element and click it to trigger the download
     const link = document.createElement("a");
     link.href = url;
-    link.download = `${title || "survey"}.json`;
+    link.download = `${title || "survey"}-cdn-survey.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -219,6 +219,7 @@ export default function CreateSurvey() {
                 </button>
               </div>
             </div>
+
             <select
               value={field.type}
               onChange={(e) => handleFieldChange(index, "type", e.target.value)}
@@ -269,7 +270,7 @@ export default function CreateSurvey() {
                   field.options.map((option, optIndex) => (
                     <div
                       key={optIndex}
-                      className="flex items-center space-x-2 mb-3"
+                      className="flex items-center space-x-2 mb-3 mt-1"
                     >
                       <input
                         type="text"
@@ -307,7 +308,7 @@ export default function CreateSurvey() {
             <button
               type="button"
               onClick={() => addField("text")}
-              className="flex items-center justify-center w-full px-5 py-3 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 transition duration-150"
+              className="flex items-center justify-center w-full px-5 py-3 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-150"
             >
               <FaFont className="mr-2" />
               Add Text Field
@@ -315,7 +316,7 @@ export default function CreateSurvey() {
             <button
               type="button"
               onClick={() => addField("textarea")}
-              className="flex items-center justify-center w-full px-5 py-3 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 transition duration-150"
+              className="flex items-center justify-center w-full px-5 py-3 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-150"
             >
               <FaAlignLeft className="mr-2" />
               Add Textarea
@@ -323,7 +324,7 @@ export default function CreateSurvey() {
             <button
               type="button"
               onClick={() => addField("radio")}
-              className="flex items-center justify-center w-full px-5 py-3 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 transition duration-150"
+              className="flex items-center justify-center w-full px-5 py-3 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-150"
             >
               <FaDotCircle className="mr-2" />
               Add Radio Button
@@ -331,7 +332,7 @@ export default function CreateSurvey() {
             <button
               type="button"
               onClick={() => addField("checkbox")}
-              className="flex items-center justify-center w-full px-5 py-3 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 transition duration-150"
+              className="flex items-center justify-center w-full px-5 py-3 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-150"
             >
               <FaCheckSquare className="mr-2" />
               Add Checkbox
@@ -339,7 +340,7 @@ export default function CreateSurvey() {
             <button
               type="button"
               onClick={() => addField("date")}
-              className="flex items-center justify-center w-full px-5 py-3 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 transition duration-150"
+              className="flex items-center justify-center w-full px-5 py-3 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-150"
             >
               <FaCalendarAlt className="mr-2" />
               Add Date Picker
@@ -347,7 +348,7 @@ export default function CreateSurvey() {
             <button
               type="button"
               onClick={() => addField("number")}
-              className="flex items-center justify-center w-full px-5 py-3 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 transition duration-150"
+              className="flex items-center justify-center w-full px-5 py-3 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-150"
             >
               <FaHashtag className="mr-2" />
               Add Number Input
@@ -355,7 +356,7 @@ export default function CreateSurvey() {
             <button
               type="button"
               onClick={() => addField("file")}
-              className="flex items-center justify-center w-full px-5 py-3 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 transition duration-150"
+              className="flex items-center justify-center w-full px-5 py-3 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-150"
             >
               <FaFileUpload className="mr-2" />
               Add File Upload
@@ -363,7 +364,7 @@ export default function CreateSurvey() {
             <button
               type="button"
               onClick={() => addField("email")}
-              className="flex items-center justify-center w-full px-5 py-3 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 transition duration-150"
+              className="flex items-center justify-center w-full px-5 py-3 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-150"
             >
               <FaEnvelope className="mr-2" />
               Add Email Input

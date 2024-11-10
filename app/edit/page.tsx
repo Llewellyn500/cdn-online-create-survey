@@ -2,16 +2,31 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Survey, SurveyField } from "../../types/survey";
+import { MdDelete } from "react-icons/md";
+import { FaCalendarAlt, FaCheckSquare, FaDotCircle, FaEnvelope, FaFileUpload, FaFont, FaHashtag, FaPlus } from "react-icons/fa";
 
 export default function EditSurveyPage() {
   const router = useRouter();
   const [survey, setSurvey] = useState<Survey | null>(null);
   const [loading, setLoading] = useState(false);
-  const [importMessage, setImportMessage] = useState("To edit a survey, please import the JSON file you previously generated.");
+  const [importMessage, setImportMessage] = useState(
+    "To edit an existing survey, import your previously generated JSON file. The file must be created using our survey creation tool and contain 'cdn-survey' in its name to ensure compatibility and prevent errors."
+  );
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (file) {
+      // Check if the file name includes 'cdn-survey'
+      if (!file.name.includes("cdn-survey")) {
+        alert(
+          "Invalid file. Please upload a JSON file with 'cdn-survey' in its name."
+        );
+        event.target.value = "";
+        return;
+      }
+
       try {
         const fileData = await file.text();
         const parsedSurvey = JSON.parse(fileData);
@@ -28,33 +43,47 @@ export default function EditSurveyPage() {
     e.preventDefault();
     if (survey) {
       // Confirm before generating a new JSON file
-      const confirmed = confirm("Are you sure you want to save and download the edited survey?");
+      const confirmed = confirm(
+        "Are you sure you want to save and download the edited survey?"
+      );
       if (confirmed) {
         const updatedSurvey = { ...survey };
 
         // Create and download the new JSON file
-        const blob = new Blob([JSON.stringify(updatedSurvey, null, 2)], { type: "application/json" });
+        const blob = new Blob([JSON.stringify(updatedSurvey, null, 2)], {
+          type: "application/json",
+        });
         const url = URL.createObjectURL(blob);
 
         const link = document.createElement("a");
         link.href = url;
-        link.download = `${updatedSurvey.title || "survey"}.json`;
+        link.download = `${updatedSurvey.title || "survey"}-cdn-survey.json`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
+        // Redirect to the admin page after delaying for 1 second
+        setTimeout(() => router.push("/"), 1000);
       }
     }
   };
 
   const handleCancel = () => {
-    router.push("/admin");
+    router.push("/");
   };
 
   const addQuestion = (type: string) => {
     if (survey) {
       const newQuestion: SurveyField = {
-        type: type as "text" | "textarea" | "radio" | "checkbox" | "date" | "number" | "file" | "email",
+        type: type as
+          | "text"
+          | "textarea"
+          | "radio"
+          | "checkbox"
+          | "date"
+          | "number"
+          | "file"
+          | "email",
         question: "",
         required: false,
         options: type === "radio" || type === "checkbox" ? [""] : [],
@@ -91,13 +120,20 @@ export default function EditSurveyPage() {
     if (survey && "options" in survey.formFields[index]) {
       const updatedFields = [...survey.formFields];
       if ("options" in updatedFields[index]) {
-        updatedFields[index].options = [...(updatedFields[index].options || []), ""];
+        updatedFields[index].options = [
+          ...(updatedFields[index].options || []),
+          "",
+        ];
       }
       setSurvey({ ...survey, formFields: updatedFields });
     }
   };
 
-  const updateOption = (fieldIndex: number, optionIndex: number, value: string) => {
+  const updateOption = (
+    fieldIndex: number,
+    optionIndex: number,
+    value: string
+  ) => {
     if (survey && "options" in survey.formFields[fieldIndex]) {
       const updatedFields = [...survey.formFields];
       if ("options" in updatedFields[fieldIndex]) {
@@ -108,10 +144,16 @@ export default function EditSurveyPage() {
   };
 
   const removeOption = (fieldIndex: number, optionIndex: number) => {
-    if (survey && (survey.formFields[fieldIndex].type === "radio" || survey.formFields[fieldIndex].type === "checkbox")) {
+    if (
+      survey &&
+      (survey.formFields[fieldIndex].type === "radio" ||
+        survey.formFields[fieldIndex].type === "checkbox")
+    ) {
       const updatedFields = [...survey.formFields];
       if ("options" in updatedFields[fieldIndex]) {
-        updatedFields[fieldIndex].options = updatedFields[fieldIndex].options!.filter((_, i) => i !== optionIndex);
+        updatedFields[fieldIndex].options = updatedFields[
+          fieldIndex
+        ].options!.filter((_, i) => i !== optionIndex);
       }
       setSurvey({ ...survey, formFields: updatedFields });
     }
@@ -120,7 +162,10 @@ export default function EditSurveyPage() {
   const moveQuestionUp = (index: number) => {
     if (index > 0 && survey) {
       const updatedFields = [...survey.formFields];
-      [updatedFields[index - 1], updatedFields[index]] = [updatedFields[index], updatedFields[index - 1]];
+      [updatedFields[index - 1], updatedFields[index]] = [
+        updatedFields[index],
+        updatedFields[index - 1],
+      ];
       setSurvey({ ...survey, formFields: updatedFields });
     }
   };
@@ -128,7 +173,10 @@ export default function EditSurveyPage() {
   const moveQuestionDown = (index: number) => {
     if (index < survey!.formFields.length - 1 && survey) {
       const updatedFields = [...survey.formFields];
-      [updatedFields[index], updatedFields[index + 1]] = [updatedFields[index + 1], updatedFields[index]];
+      [updatedFields[index], updatedFields[index + 1]] = [
+        updatedFields[index + 1],
+        updatedFields[index],
+      ];
       setSurvey({ ...survey, formFields: updatedFields });
     }
   };
@@ -136,53 +184,130 @@ export default function EditSurveyPage() {
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Edit Survey</h1>
-
+    <div className="container mx-auto p-4 mt-10 mb-5">
       {/* Import Survey JSON File */}
       {!survey && (
-        <div className="mb-6">
-          <p className="mb-4">{importMessage}</p>
-          <input type="file" accept=".json" onChange={handleFileUpload} className="block" />
+        <div className="bg-white p-5 mb-10 rounded-2xl">
+          <div className="mb-2">
+            <h1 className="text-4xl font-bold mb-5 text-center">Edit Survey</h1>
+            <p className="text-center mb-7">
+              <span className="font-semibold text-red-700">INSTRUCTIONS: </span>
+              {importMessage}
+            </p>
+            <div className="flex items-center justify-center">
+              <label
+                htmlFor="file-upload"
+                className="flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg shadow-md cursor-pointer hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-150"
+              >
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V8.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0010.586 2H4zm5 0v4a1 1 0 001 1h4v7H5V4h4zm2 0h2.586L11 5.586V3z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                Upload Survey File
+              </label>
+              <input
+                id="file-upload"
+                type="file"
+                accept=".json"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+            </div>
+          </div>
         </div>
       )}
 
       {survey && (
-        <form onSubmit={handleUpdateSurvey} className="space-y-4">
+        <>
+        <div className="bg-white p-5 mb-10 rounded-2xl">
+        <h1 className="text-4xl font-bold mb-5 text-center">Edit Survey</h1>
+        <p className="text-center">
+          <span className="font-semibold text-red-700">INSTRUCTIONS:</span>{" "}
+          After importing your existing survey file, carefully review and make your desired changes. Take time to check all questions, required fields, and survey details. Once you're satisfied with your edits, click 'Create' to download the updated version of your survey.
+        </p>
+      </div>
+        <form
+          onSubmit={handleUpdateSurvey}
+          className="space-y-10 bg-white p-5 rounded-2xl"
+        >
           <div>
-            <label>Survey Title</label>
+            <label className="font-semibold">Survey Title</label>
             <input
               type="text"
               value={survey.title}
               onChange={(e) => setSurvey({ ...survey, title: e.target.value })}
-              className="border px-2 py-1 rounded w-full"
+              className="border-2 px-3 py-3 rounded-xl w-full mt-3 border-gray-600"
               placeholder="Enter survey title"
             />
           </div>
 
           <div>
-            <label>Survey Description</label>
+            <label className="font-semibold">Survey Description</label>
             <textarea
               value={survey.description || ""}
-              onChange={(e) => setSurvey({ ...survey, description: e.target.value })}
-              className="border px-2 py-1 rounded w-full"
+              onChange={(e) =>
+                setSurvey({ ...survey, description: e.target.value })
+              }
+              className="border-2 px-3 py-3 rounded-xl w-full mt-3 border-gray-600"
               placeholder="Enter survey description"
               rows={4}
             />
           </div>
 
+          <hr className="border-t-2 border-gray-300 rounded-full my-4" />
+
           {survey.formFields.map((field, index) => (
-            <div key={index} className="space-y-2 border border-gray-300 p-4 rounded">
-              <div className="flex justify-between items-center">
-                <label>Question {index + 1}</label>
-                <div className="flex space-x-2">
-                  <button type="button" onClick={() => moveQuestionUp(index)} className="bg-gray-300 px-2 py-1 rounded" disabled={index === 0}>↑</button>
-                  <button type="button" onClick={() => moveQuestionDown(index)} className="bg-gray-300 px-2 py-1 rounded" disabled={index === survey.formFields.length - 1}>↓</button>
-                  <button type="button" onClick={() => deleteQuestion(index)} className="bg-red-600 text-white px-2 py-1 rounded">Delete</button>
+            <div
+              key={index}
+              className="space-y-3 border-2 border-gray-600 p-5 rounded-xl"
+            >
+              <div className="flex justify-between items-center mb-2">
+                <label className="font-bold uppercase">
+                  Question {index + 1}
+                </label>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    onClick={() => moveQuestionUp(index)}
+                    className="flex-1 px-4 py-2 bg-gray-600 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={index === 0}
+                  >
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => moveQuestionDown(index)}
+                    className="flex-1 px-4 py-2 bg-gray-600 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={index === survey.formFields.length - 1}
+                    aria-label="Delete question"
+                  >
+                    ↓
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => deleteQuestion(index)}
+                    className="flex-1 px-3 py-2 bg-red-500 text-white rounded"
+                  >
+                    <MdDelete />
+                  </button>
                 </div>
               </div>
 
-              <select value={field.type} onChange={(e) => handleFieldChange(index, "type", e.target.value)} className="border px-2 py-1 rounded w-full mb-2">
+              <select
+                value={field.type}
+                onChange={(e) =>
+                  handleFieldChange(index, "type", e.target.value)
+                }
+                className="border-2 border-gray-600 px-2 py-2 rounded-lg w-full mb-2 bg-gray-600 text-white"
+              >
                 <option value="text">Text Input</option>
                 <option value="textarea">Textarea</option>
                 <option value="radio">Radio Button</option>
@@ -193,44 +318,159 @@ export default function EditSurveyPage() {
                 <option value="email">Email Input</option>
               </select>
 
-              <input type="text" value={field.question} onChange={(e) => handleFieldChange(index, "question", e.target.value)} className="border px-2 py-1 rounded w-full" placeholder="Enter question text" />
+              <input
+                type="text"
+                value={field.question}
+                onChange={(e) =>
+                  handleFieldChange(index, "question", e.target.value)
+                }
+                className="border-2 px-3 py-3 rounded-xl w-full mt-3 border-gray-600"
+                placeholder="Enter question text"
+              />
 
               <div className="flex items-center space-x-2">
-                <input type="checkbox" checked={field.required} onChange={(e) => handleFieldChange(index, "required", e.target.checked)} />
-                <label>Required</label>
+                <input
+                  type="checkbox"
+                  checked={field.required}
+                  onChange={(e) =>
+                    handleFieldChange(index, "required", e.target.checked)
+                  }
+                  className="h-5 w-4"
+                  id={`required-checkbox-${index}`}
+                />
+                <label
+                  htmlFor={`required-checkbox-${index}`}
+                  className="font-semibold text-gray-700"
+                >
+                  Required
+                </label>
               </div>
 
               {(field.type === "radio" || field.type === "checkbox") && (
                 <div>
-                  <label>Options:</label>
-                  {field.options && field.options.map((option, optIndex) => (
-                    <div key={optIndex} className="flex items-center space-x-2 mb-1">
-                      <input type="text" value={option} onChange={(e) => updateOption(index, optIndex, e.target.value)} className="border px-2 py-1 rounded w-full" placeholder={`Option ${optIndex + 1}`} />
-                      <button type="button" onClick={() => removeOption(index, optIndex)} className="bg-red-600 text-white px-2 py-1 rounded">Remove</button>
-                    </div>
-                  ))}
-                  <button type="button" onClick={() => addOption(index)} className="bg-blue-600 text-white px-2 py-1 rounded">Add Option</button>
+                  <label className="font-semibold mr-2">Options:</label>
+                  {field.options &&
+                    field.options.map((option, optIndex) => (
+                      <div
+                        key={optIndex}
+                        className="flex items-center space-x-2 mb-3 mt-1"
+                      >
+                        <input
+                          type="text"
+                          value={option}
+                          onChange={(e) =>
+                            updateOption(index, optIndex, e.target.value)
+                          }
+                          className="border-2 px-3 py-3 rounded-xl w-full border-gray-600 h-12"
+                          placeholder={`Option ${optIndex + 1}`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeOption(index, optIndex)}
+                          className="px-4 py-3 bg-red-500 text-white rounded-md h-12 flex items-center justify-center"
+                        >
+                           <MdDelete />
+                        </button>
+                      </div>
+                    ))}
+                  <button
+                    type="button"
+                    onClick={() => addOption(index)}
+                    className="mt-2 flex items-center px-2 py-1 bg-green-600 text-white rounded-md font-semibold"
+                  >
+                    <FaPlus className="mr-1" />
+                    Add Option
+                  </button>
                 </div>
               )}
             </div>
           ))}
 
-          <div className="space-y-2 mt-4">
-            <button type="button" onClick={() => addQuestion("text")} className="px-4 py-2 bg-blue-600 text-white rounded">Add Text Field</button>
-            <button type="button" onClick={() => addQuestion("textarea")} className="px-4 py-2 bg-blue-600 text-white rounded">Add Textarea</button>
-            <button type="button" onClick={() => addQuestion("radio")} className="px-4 py-2 bg-blue-600 text-white rounded">Add Radio Button</button>
-            <button type="button" onClick={() => addQuestion("checkbox")} className="px-4 py-2 bg-blue-600 text-white rounded">Add Checkbox</button>
-            <button type="button" onClick={() => addQuestion("date")} className="px-4 py-2 bg-blue-600 text-white rounded">Add Date Picker</button>
-            <button type="button" onClick={() => addQuestion("number")} className="px-4 py-2 bg-blue-600 text-white rounded">Add Number Input</button>
-            <button type="button" onClick={() => addQuestion("file")} className="px-4 py-2 bg-blue-600 text-white rounded">Add File Upload</button>
-            <button type="button" onClick={() => addQuestion("email")} className="px-4 py-2 bg-blue-600 text-white rounded">Add Email Input</button>
+          <div className="container mx-auto mt-6">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            <button
+              type="button"
+              onClick={() => addQuestion("text")}
+              className="flex items-center justify-center w-full px-5 py-3 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-150"
+            >
+              <FaFont className="mr-2" />
+              Add Text Field
+            </button>
+            <button
+              type="button"
+              onClick={() => addQuestion("textarea")}
+              className="flex items-center justify-center w-full px-5 py-3 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-150"
+            >
+              Add Textarea
+            </button>
+            <button
+              type="button"
+              onClick={() => addQuestion("radio")}
+              className="flex items-center justify-center w-full px-5 py-3 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-150"
+            >
+              <FaDotCircle className="mr-2" />
+              Add Radio Button
+            </button>
+            <button
+              type="button"
+              onClick={() => addQuestion("checkbox")}
+              className="flex items-center justify-center w-full px-5 py-3 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-150"
+            >
+              <FaCheckSquare className="mr-2" />
+              Add Checkbox
+            </button>
+            <button
+              type="button"
+              onClick={() => addQuestion("date")}
+              className="flex items-center justify-center w-full px-5 py-3 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-150"
+            >
+              <FaCalendarAlt className="mr-2" />
+              Add Date Picker
+            </button>
+            <button
+              type="button"
+              onClick={() => addQuestion("number")}
+              className="flex items-center justify-center w-full px-5 py-3 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-150"
+            >
+              <FaHashtag className="mr-2" />
+              Add Number Input
+            </button>
+            <button
+              type="button"
+              onClick={() => addQuestion("file")}
+              className="flex items-center justify-center w-full px-5 py-3 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-150"
+            >
+              <FaFileUpload className="mr-2" />
+              Add File Upload
+            </button>
+            <button
+              type="button"
+              onClick={() => addQuestion("email")}
+              className="flex items-center justify-center w-full px-5 py-3 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-150"
+            >
+              <FaEnvelope className="mr-2" />
+              Add Email Input
+            </button>
+          </div>
           </div>
 
           <div className="flex space-x-4 mt-6">
-            <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded">Save and Download Edited Survey</button>
-            <button type="button" onClick={handleCancel} className="bg-gray-600 text-white px-4 py-2 rounded">Cancel</button>
+            <button
+              type="submit"
+              className="w-full md:w-auto px-4 py-3 bg-green-600 text-white rounded-md font-semibold"
+            >
+              Save Survey
+            </button>
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="w-full md:w-auto px-4 py-3 bg-gray-600 text-white rounded-md font-semibold"
+            >
+              Go Back
+            </button>
           </div>
         </form>
+        </>
       )}
     </div>
   );
