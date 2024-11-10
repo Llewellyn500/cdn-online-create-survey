@@ -125,6 +125,9 @@ export default function CreateSurvey() {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+
+    // redirect back after exporting but wait for the download to start
+    setTimeout(() => router.push("/"), 1000);
   };
 
   const handleCancel = () => {
