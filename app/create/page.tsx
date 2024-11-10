@@ -99,33 +99,39 @@ export default function CreateSurvey() {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Create Survey</h1>
-      <form onSubmit={handleExportSurvey} className="space-y-4">
+    <div className="container mx-auto p-4 mt-10">
+      <div className='bg-white p-5 mb-10 rounded-2xl'>
+      <h1 className="text-4xl font-bold mb-5 text-center">Create Survey</h1>
+      <p className='text-center'><span className='font-semibold text-red-700'>INSTRUCTIONS:</span> Create your survey and review all questions carefully. Mark essential questions as required. Once finished, click 'Create' to download the survey as a JSON file. Finally, import this file into the CDN Survey app on the CDN server.</p>
+      </div>
+      
+      <form onSubmit={handleExportSurvey} className="space-y-10 bg-white p-5 rounded-2xl">
 
         <div>
-          <label>Survey Title *</label>
+          <label className='font-semibold'>Survey Title <span className='text-red-700 font-black'>*</span></label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="border px-2 py-1 rounded w-full"
+            className="border-2 px-3 py-3 rounded-xl w-full mt-3 border-gray-600"
             placeholder="Enter survey title"
             required
           />
         </div>
 
         <div>
-          <label>Survey Description *</label>
+          <label className='font-semibold'>Survey Description <span className='text-red-700 font-black'>*</span></label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="border px-2 py-1 rounded w-full"
+            className="border-2 px-3 py-3 rounded-xl w-full mt-3 border-gray-600"
             placeholder="Enter survey description"
             rows={4}
             required
           />
         </div>
+
+        <hr className="border-t-2 border-gray-300 rounded-full my-4"/>
 
         {formFields.map((field, index) => (
           <div key={index} className="space-y-2 border border-gray-300 p-4 rounded">
