@@ -52,15 +52,15 @@ export default function Navbar() {
             )}
           </button>
         </div>
-        <div className="hidden md:flex space-x-16 mr-14">
+        <div className="hidden md:flex space-x-10 mr-14">
           <Link href="/create">
-            <div className="text-black font-semibold text-lg">Create</div>
+            <div className="text-black font-semibold text-lg hover:bg-gray-100 p-3 rounded-lg transition-all duration-500">Create</div>
           </Link>
           <Link href="/edit">
-            <div className="text-black font-semibold text-lg">Edit</div>
+            <div className="text-black font-semibold text-lg hover:bg-gray-100 p-3 rounded-lg transition-all duration-500">Edit</div>
           </Link>
           <Link href="/view">
-            <div className="text-black font-semibold text-lg">View</div>
+            <div className="text-black font-semibold text-lg hover:bg-gray-100 p-3 rounded-lg transition-all duration-500">View</div>
           </Link>
         </div>
       </div>
