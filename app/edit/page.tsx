@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Survey, SurveyField } from "../../types/survey";
 import { MdDelete } from "react-icons/md";
-import { FaCalendarAlt, FaCheckSquare, FaDotCircle, FaEnvelope, FaFileUpload, FaFont, FaHashtag, FaPlus } from "react-icons/fa";
+import { FaAlignLeft, FaCalendarAlt, FaCheckSquare, FaDotCircle, FaEnvelope, FaFileUpload, FaFont, FaHashtag, FaPlus } from "react-icons/fa";
 
 export default function EditSurveyPage() {
   const router = useRouter();
@@ -401,6 +401,7 @@ export default function EditSurveyPage() {
               onClick={() => addQuestion("textarea")}
               className="flex items-center justify-center w-full px-5 py-3 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 transition duration-150"
             >
+              <FaAlignLeft className="mr-2" />
               Add Textarea
             </button>
             <button
