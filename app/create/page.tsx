@@ -375,7 +375,7 @@ export default function CreateSurvey() {
         <div className="flex flex-col space-y-4 mt-6 md:flex-row md:space-x-4 md:space-y-0">
           <button
             type="submit"
-            className="w-full md:w-auto px-4 py-3 bg-green-600 text-white rounded-md font-semibold"
+            className="w-full md:w-auto px-4 py-3 bg-green-600 text-white rounded-md font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-150"
           >
             Create Survey
           </button>

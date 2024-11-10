@@ -15,15 +15,16 @@ export default function Checkbox({ options, selectedOptions, onChange }: Checkbo
   return (
     <div>
       {options.map((option, index) => (
-        <div key={index}>
+        <div key={index} className="flex items-center space-x-2">
           <input
             type="checkbox"
             id={`checkbox-${index}`}
             value={option}
             checked={selectedOptions.includes(option)}
             onChange={() => handleCheckboxChange(option)}
+            className="h-5 w-4"
           />
-          <label htmlFor={`checkbox-${index}`} className="ml-2">
+          <label htmlFor={`checkbox-${index}`}>
             {option}
           </label>
         </div>
